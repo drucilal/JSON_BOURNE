@@ -38,4 +38,44 @@ FROM
 `bigquery-public-data.google_analytics_sample.ga_sessions_20161201*` t, t.hits h
 
 
+-- To run Random Forest Model to predict that there is going to be a purchase or not? 
+parameterized_query = “”"
+SELECT
+    fullVisitorId,
+    channelGrouping,
+    prod.productListName,
+    trafficSource.referralPath,
+    trafficSource.campaign,
+    trafficSource.keyword,
+    trafficSource.adContent,
+    trafficSource.adwordsClickInfo.adNetworkType,
+    device.operatingSystem,
+    visitNumber,
+    date,
+    prod.productListPosition,
+    hits.eCommerceAction.action_type,
+    prod.localProductPrice,
+    prod.v2ProductCategory,
+    prod.v2ProductName,
+    prod.productVariant,
+    hits.type,
+    hits.hour,
+    trafficSource.medium,
+    trafficSource.source,
+    device.deviceCategory,
+    device.browser,
+    geoNetwork.country
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`,
+    UNNEST(hits) AS hits,
+    UNNEST(hits.product) AS prod
+WHERE
+    _TABLE_SUFFIX BETWEEN ‘%s’ AND ‘%s’
+“”"
+start_date = ‘20160801’
+end_date = ‘20160903’
+# end_date = ‘20170801’
+parameterized_query_df = bigquery_client.query((parameterized_query % (start_date, end_date))).to_dataframe()
+parameterized_query_df
+
+
 
