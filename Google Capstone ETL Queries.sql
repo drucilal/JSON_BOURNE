@@ -77,5 +77,16 @@ end_date = ‘20160903’
 parameterized_query_df = bigquery_client.query((parameterized_query % (start_date, end_date))).to_dataframe()
 parameterized_query_df
 
+-- The drop off rates for the year
+
+-- Action Type 3,5,6
+SELECT
+COUNT (DISTINCT fullVisitorId) AS users
+FROM 
+  `bigquery-public-data.google_analytics_sample.ga_sessions_*`, 
+UNNEST(hits) AS hits
+WHERE 
+  _TABLE_SUFFIX BETWEEN "20160801" AND "20170801" AND eCommerceAction.action_type = '3'
+
 
 
